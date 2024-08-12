@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package message;
+
+message Message {
+  // Entity
+  message Entity {
+    string code = 1; // Entity code
+  }
+
+  // Event
+  message Event {
+    optional uint64 timestamp = 1; // Timestamp in seconds
+    optional EventType type = 2; // Event type
+    optional EventSource source = 3; // Event Source
+    optional string note = 4; // Custom event description
+    optional EventUser user = 5; // User
+    optional EventRequest request = 6; // Request
+    optional EventApp app = 7; // The service that caused the event
+    optional EventChange change = 8; // Names of fields that were changed
+    repeated EventField extra = 9; // Additional fields
+    repeated EventField fields = 10; // All fields
+  }
+
+  // EventUser
+  message EventUser {
+    optional string id = 1; // User ID
+  }
+
+  // EventRequest
+  message EventRequest {
+    optional string id = 1; // Request ID
+  }
+
+  // EventApp
+  message EventApp {
+    optional string code = 1; // Symbolic service code
+  }
+
+  // EventChange
+  message EventChange {
+    repeated string fields = 1; // List of field names
+  }
+
+  // EventField ...
+  message EventField {
+    string code = 1; // Character field code
+    string value = 3; // Field value
+  }
+
+  // EventType
+  enum EventType {
+    EVENT_TYPE_CREATE = 0; // Creation
+    EVENT_TYPE_UPDATE = 1; // Change
+    EVENT_TYPE_REMOVE = 2; // Removal
+  }
+
+  // EventSource
+  enum EventSource {
+    EVENT_SOURCE_UNKNOWN = 0; // Unknown source
+    EVENT_SOURCE_HUMAN = 1; // User/Client
+    EVENT_SOURCE_API = 2; // API
+    EVENT_SOURCE_SERVICE = 3; // Internal mechanics of the service
+  }
+
+  Entity entity = 1; // Essence
+  Event event = 2; // Event
+}
