@@ -162,7 +162,7 @@ export default function useAudit(options: MeshPluginOptions<AuditConfig>): MeshP
             };
 
             return ({ result }) => {
-                const endTime = (Date.now() - startTime) / 1000;
+                const endTime = Date.now() - startTime;
 
                 message.event.fields.push({
                     code: 'latency',

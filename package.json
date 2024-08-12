@@ -1,6 +1,6 @@
 {
   "name": "@dmamontov/graphql-mesh-audit-log-plugin",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Dmitry Mamontov",
   "type": "module",
   "repository": {
