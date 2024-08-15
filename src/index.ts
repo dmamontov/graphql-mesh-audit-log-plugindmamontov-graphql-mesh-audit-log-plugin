@@ -1,6 +1,7 @@
 import { Kafka, type Message } from 'kafkajs';
 import lodashGet from 'lodash.get';
 import protobuf from 'protobufjs';
+import { Md5 } from 'ts-md5';
 import { type MeshPlugin, type MeshPluginOptions } from '@graphql-mesh/types';
 import { EventSource, EventType, type AuditConfig } from './types';
 import { evaluate } from './utils';
@@ -73,6 +74,7 @@ export default function useAudit(options: MeshPluginOptions<AuditConfig>): MeshP
             topic: kafkaConfig.topic,
             messages: [
                 {
+                    key: Md5.hashStr(JSON.stringify(message)),
                     value: protobufMessage.encode(protobufMessage.create(message)).finish(),
                 } as Message,
             ],
