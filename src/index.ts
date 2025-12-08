@@ -1,5 +1,4 @@
 import { Kafka, type Message } from 'kafkajs';
-import lodashGet from 'lodash.get';
 import protobuf from 'protobufjs';
 import { Md5 } from 'ts-md5';
 import { type MeshPlugin, type MeshPluginOptions } from '@graphql-mesh/types';
@@ -38,7 +37,7 @@ export default function useAudit(options: MeshPluginOptions<AuditConfig>): MeshP
     let protobufMessage: protobuf.Type;
 
     const loadProto = (): void => {
-        // eslint-disable-next-line unicorn/prefer-module
+        // eslint-disable-next-line
         protobuf.load(__dirname + '/message.proto', (err, root) => {
             if (err) {
                 throw err;
@@ -83,6 +82,10 @@ export default function useAudit(options: MeshPluginOptions<AuditConfig>): MeshP
         await producer.disconnect();
     };
 
+    const getExternalId = (args: Record<string, any>, options: string) => {
+        return new Function('args', 'env', 'return ' + options)(args, process.env);
+    };
+
     return {
         onDelegate(payload) {
             const source = sources.find(
@@ -107,7 +110,7 @@ export default function useAudit(options: MeshPluginOptions<AuditConfig>): MeshP
 
             const args = payload.key ? payload.argsFromKeys([payload.key]) : payload.args;
 
-            const externalId = source.externalId ? lodashGet(args, source.externalId) : null;
+            const externalId = getExternalId(args, source.externalId);
 
             const message = {
                 entity: {
@@ -133,7 +136,7 @@ export default function useAudit(options: MeshPluginOptions<AuditConfig>): MeshP
                             code: 'external_id',
                             value: Array.isArray(externalId)
                                 ? JSON.stringify(externalId)
-                                : externalId.toString(),
+                                : externalId?.toString(),
                         },
                         {
                             code: 'source_name',
@@ -190,7 +193,7 @@ export default function useAudit(options: MeshPluginOptions<AuditConfig>): MeshP
                 } else {
                     message.event.fields.push({
                         code: 'result',
-                        value: JSON.stringify({ error: result?.message || result.toString() }),
+                        value: JSON.stringify({ error: result?.message || result?.toString() }),
                     });
                 }
 
